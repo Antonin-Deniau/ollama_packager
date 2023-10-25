@@ -1,1 +1,1 @@
-FROM ./agentlm.Q8_0.gguf
+FROM ./model.gguf

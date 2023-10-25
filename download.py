@@ -1,8 +1,12 @@
 from huggingface_hub import snapshot_download
+import sys
 
-snapshot_download(
-    repo_id="THUDM/agentlm-13b",
-    local_dir="agentlm",
-    local_dir_use_symlinks=False,
-    revision="main"
-)
+
+def main():
+    model_repo = sys.argv[1]
+    snapshot_download(
+        repo_id=model_repo,
+        local_dir="model",
+        local_dir_use_symlinks=False,
+        revision="main"
+    )
