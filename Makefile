@@ -1,8 +1,13 @@
-.PHONY: convert
+.PHONY: convert clean
 
 model_repo="THUDM/agentlm-8b"
 quantization_size=8
 output_name=agentlm_8b_q8
+
+clean:
+	rm -rf llama.cpp
+	rm -rf model
+	rm -rf model.gguf
 
 convert:
 	pip install huggingface_hub
