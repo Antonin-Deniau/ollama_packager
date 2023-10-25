@@ -1,8 +1,8 @@
 .PHONY: convert clean
 
-model_repo="THUDM/agentlm-7b"
-quantization_size=8
-ollama_output_name=agentlm_7b_q8
+model_repo="THUDM/agentlm-13b"
+quantization_size=q8_0
+ollama_output_name=agentlm_13b_q8
 
 clean:
 	rm -rf llama.cpp
@@ -22,7 +22,7 @@ convert:
 
 	python llama.cpp/convert.py model \
 								--outfile model.gguf \
-								--outtype q$(quantization_size)_0
+								--outtype $(quantization_size)
 
 	# Put it in tmp to avoid linux permission issues with the ollama daemon
 	mkdir -p /tmp/model

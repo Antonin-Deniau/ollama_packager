@@ -5,6 +5,5 @@ Convert the HuggingFace AgentML model to the Ollama format.
 ## Usage
 
 ```bash
-# Theses arguments are the default ones, you can omit them
-make convert model_repo="THUDM/agentlm-7b" quantization_size=8 ollama_output_name=agentlm_7b_q8
+make convert model_repo="THUDM/agentlm-13b" quantization_size=q8_0 ollama_output_name=agentlm_13b
 ```
