@@ -1,6 +1,6 @@
 # AgentML convertion script
 
-Convert the HuggingFace AgentML model to the Oolama format.
+Convert the HuggingFace AgentML model to the Ollama format.
 
 ## Usage
 
