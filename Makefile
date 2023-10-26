@@ -1,4 +1,4 @@
-.PHONY: download install_llamacpp package run
+.PHONY: download install_llamacpp package convert run
 
 model_repo="THUDM/agentlm-13b"
 quantization_size=q8_0
