@@ -1,9 +1,13 @@
-# AgentML convertion script
+# Ollama packager
 
-Convert the HuggingFace AgentML model to the Ollama format.
+Convert some HuggingFace models to the gguf format & an Ollama image.
 
 ## Usage
 
 ```bash
-make convert model_repo="THUDM/agentlm-13b" quantization_size=q8_0 ollama_output_name=agentlm_13b
+# List available models
+cat ./models.yml
+
+# Convert a model
+make run model_id=<model_id>
 ```

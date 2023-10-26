@@ -1,0 +1,9 @@
+FROM {{ gguf_model_path }}
+
+{% for name, value in model_parameters %}
+PARAMETER {{ name }} {{ value }}
+{% endfor %}
+
+{% if system_prompt is defined and system_prompt != "" %}
+SYSTEM """{{ system_prompt }}"""
+{% endif %}

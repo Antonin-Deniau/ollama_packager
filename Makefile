@@ -1,35 +1,79 @@
-.PHONY: download install_llamacpp package convert run
+ifndef model_id
+$(error model_id is not set)
+endif
 
-model_repo="THUDM/agentlm-13b"
-quantization_size=q8_0
-ollama_output_name=agentlm_13b_q8
+.PHONY: install_deps download_model convert package run
 
-run: download install_llamacpp convert package
+model_repo := $(shell python ./utils/var.py 'repo' $(model_id))
+quantization_size := $(shell python ./utils/var.py 'quantization' $(model_id))
+model_image_name := $(shell python ./utils/var.py 'name' $(model_id))
 
-download:
-	rm -rf model
-	pip install huggingface_hub
-	python download.py $(model_repo)
+run: install_deps download_model convert package
 
+install_deps:
+	@echo "[TASK] Install dependencies"
+	mkdir -p build
 
-install_llamacpp:
-	rm -rf llama.cpp
-	git clone https://github.com/ggerganov/llama.cpp.git
-	pip install -r llama.cpp/requirements.txt
+	@echo "[STEP] Install python dependencies"
+	pip install -r requirements.txt
+
+	@echo "[STEP] Install llama.cpp"
+	if [ -d "~/build/llama.cpp" ]; then \
+		cd ./build/llama.cpp && git reset HEAD && git pull ; \
+	else \
+		git clone https://github.com/ggerganov/llama.cpp.git ./build/llama.cpp ; \
+	fi ;
+
+	@echo Install llama.cpp dependencies"
+	pip install -r ./build/llama.cpp/requirements.txt
+
+download_model:
+	@echo "[TASK] Download model"
+	@echo "[STEP] Init folder structure & delete old model"
+	mkdir -p build
+
+	if [ -d "./build/$(model_id)" ]; then \
+		rm -rf ./build/$(model_id) ; \
+	fi ;
+
+	@echo "[STEP] Download model"
+	python ./utils/download.py $(model_repo)
 
 convert:
-	rm -rf model.gguf
-	# Fix for the model, the true size is 32000 (cat model/tokenizer.json |jq '.model.vocab | length)
-	sed -i 's/32256/32000/g' model/config.json
+	@echo "[TASK] Convert model"
+	@echo "[STEP] Init folder structure & delete old model"
+	mkdir -p build
 
-	python llama.cpp/convert.py model \
-								--outfile model.gguf \
+	if [ -f "./build/$(model_id)/model.gguf" ]; then \
+		rm build/$(model_id)/model.gguf ; \
+	fi ;
+
+	@echo "[STEP] Convert model to .gguf"
+	python ./utils/hotfix.py convert $(model_id)
+	python ./build/llama.cpp/convert.py /build/$(model_id)/model \
+								--outfile ./build/$(model_id)/model.gguf \
 								--outtype $(quantization_size)
 
 package:
-	rm -rf /tmp/model
-	# Put it in tmp to avoid linux permission issues with the ollama daemon
-	mkdir -p /tmp/model
-	cp model.gguf /tmp/model/model.gguf
-	cp Modelfile /tmp/model/Modelfile
-	cd /tmp/model && ollama create $(ollama_output_name)
+	@echo "[TASK] Package model"
+	# Note: It's put in tmp to avoid linux permission issues with the ollama daemon
+
+	@echo "[STEP] Init folder structure & delete old model"
+	mkdir -p /tmp/models
+
+	if [ -d "/tmp/models/$(model_id)" ]; then \
+		rm -rf /tmp/models/$(model_id) ; \
+	fi ;
+
+	mkdir -p /tmp/models/$(model_id)
+
+	@echo "[STEP] Create modelfile"
+	python ./utils/hotfix.py $(model_id) > /tmp/models/$(model_id)/Modelfile
+
+	@echo "[STEP] Copy files & package model for ollama"
+	cp ./build/$(model_id)/model.gguf /tmp/models/$(model_id)/model.gguf
+	cp ./build/$(model_id)/Modelfile /tmp/models/$(model_id)/Modelfile
+
+	python ./utils/hotfix.py package $(model_id)
+
+	cd /tmp/models/$(model_id) && ollama create $(model_image_name)

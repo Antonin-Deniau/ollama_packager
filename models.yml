@@ -1,0 +1,31 @@
+# Format:
+#   <model_id>: # Used to identify the model in the script
+#     name: # Name of the model in ollama
+#     tag: # Tag of the model in ollama
+#     repo: # Hugginface repo
+#     quantization: # Quantization to use for the model
+#     parameters: # List of parameters to use in the ollama Modelfile
+#     hotfixes: # List of hotfixes to apply to the model
+#       - step: # Step to apply the hotfix to (convert/package)
+#         description: # Description of the hotfix
+#         cmd: # Command to run in the hotfix
+
+models:
+  xwin_lm_7b:
+    name: winlm
+    tag: 7b
+    repo: Xwin-LM/Xwin-LM-7B-V0.2
+    quantization: q8_0
+    parameters: []
+    hotfixes: []
+
+  agentlm_13b:
+    name: agentlm
+    tag: 13b
+    repo: THUDM/agentlm-13b
+    quantization: q8_0
+    parameters: []
+    hotfixes:
+        - step: convert
+          description: "Fix the vocab size: The true size is 32000 (cat model/tokenizer.json |jq '.model.vocab | length)"
+          cmd: sed -i 's/32256/32000/g' ./build/$(model_id)/model/config.json
