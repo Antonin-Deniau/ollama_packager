@@ -22,7 +22,7 @@ install_llamacpp:
 	pip install -r llama.cpp/requirements.txt
 
 convert:
-	# Fix for the 7b model
+	# Fix for the model, the true size is 32000 (cat model/tokenizer.json |jq '.model.vocab | length)
 	sed -i 's/32256/32000/g' model/config.json
 
 	python llama.cpp/convert.py model \
