@@ -9,7 +9,8 @@ models_config = yaml.load(open(os.path.join(os.path.dirname(__file__), "../model
 
 snapshot_download(
     repo_id=models_config["models"][model_id]["repo"],
-    local_dir=f"../build/{model_id}/model",
+    local_dir=f"./build/{model_id}/model",
     local_dir_use_symlinks=False,
+    cache_dir=f"./build/cache",
     revision="main"
 )

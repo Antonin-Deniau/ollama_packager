@@ -51,12 +51,12 @@ convert:
 	mkdir -p build
 
 	if [ -f "./build/$(model_id)/model.gguf" ]; then \
-		rm build/$(model_id)/model.gguf ; \
+		rm ./build/$(model_id)/model.gguf ; \
 	fi ;
 
 	@echo "[STEP] Convert model to .gguf"
 	python ./utils/hotfix.py convert $(model_id)
-	python ./build/llama.cpp/convert.py /build/$(model_id)/model \
+	python ./build/llama.cpp/convert.py ./build/$(model_id)/model \
 								--outfile ./build/$(model_id)/model.gguf \
 								--outtype $(quantization_size)
 
@@ -74,7 +74,7 @@ package:
 	mkdir -p /tmp/models/$(model_id)
 
 	@echo "[STEP] Create modelfile"
-	python ./utils/hotfix.py $(model_id) > /tmp/models/$(model_id)/Modelfile
+	python ./utils/create_modelfile.py $(model_id)
 
 	@echo "[STEP] Copy files & package model for ollama"
 	cp ./build/$(model_id)/model.gguf /tmp/models/$(model_id)/model.gguf
