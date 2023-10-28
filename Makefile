@@ -2,13 +2,19 @@ ifndef model_id
 $(error model_id is not set)
 endif
 
-.PHONY: install_deps download_model convert package run
+.PHONY: show_params install_deps download_model convert package run
 
-model_repo := $(shell python ./utils/var.py 'repo' $(model_id))
-quantization_size := $(shell python ./utils/var.py 'quantization' $(model_id))
-model_image_name := $(shell python ./utils/var.py 'name' $(model_id))
+quantization_size := $(shell python ./utils/get_var.py $(model_id) 'quantization')
+model_image_name := $(shell python ./utils/get_var.py $(model_id) 'name')
 
-run: install_deps download_model convert package
+run: show_params install_deps download_model convert package
+
+show_params:
+	@echo "[TASK] Show parameters"
+
+	@echo "[STEP] Model ID: $(model_id)"
+	@echo "[STEP] Quantization Size: $(quantization_size)"
+	@echo "[STEP] Model Image Name: $(model_image_name)"
 
 install_deps:
 	@echo "[TASK] Install dependencies"
@@ -18,13 +24,13 @@ install_deps:
 	pip install -r requirements.txt
 
 	@echo "[STEP] Install llama.cpp"
-	if [ -d "~/build/llama.cpp" ]; then \
+	if [ -d "./build/llama.cpp" ]; then \
 		cd ./build/llama.cpp && git reset HEAD && git pull ; \
 	else \
 		git clone https://github.com/ggerganov/llama.cpp.git ./build/llama.cpp ; \
 	fi ;
 
-	@echo Install llama.cpp dependencies"
+	@echo "[STEP] Install llama.cpp dependencies"
 	pip install -r ./build/llama.cpp/requirements.txt
 
 download_model:
@@ -37,7 +43,7 @@ download_model:
 	fi ;
 
 	@echo "[STEP] Download model"
-	python ./utils/download.py $(model_repo)
+	python ./utils/download.py $(model_id)
 
 convert:
 	@echo "[TASK] Convert model"
