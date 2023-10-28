@@ -38,8 +38,8 @@ download_model:
 	@echo "[STEP] Init folder structure & delete old model"
 	mkdir -p build
 
-	if [ -d "./build/$(model_id)" ]; then \
-		rm -rf ./build/$(model_id) ; \
+	if [ -d "./build/$(model_id)/model" ]; then \
+		rm -rf ./build/$(model_id)/model ; \
 	fi ;
 
 	@echo "[STEP] Download model"
