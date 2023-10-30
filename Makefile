@@ -6,6 +6,7 @@ endif
 
 quantization_size := $(shell python ./utils/get_var.py $(model_id) 'quantization')
 model_image_name := $(shell python ./utils/get_var.py $(model_id) 'name')
+model_image_tag_name := $(shell python ./utils/get_var.py $(model_id) 'tag')
 
 run: show_params install_deps download_model convert package
 
@@ -81,4 +82,4 @@ package:
 
 	python ./utils/hotfix.py package $(model_id)
 
-	cd /tmp/models/$(model_id) && ollama create $(model_image_name)
+	cd /tmp/models/$(model_id) && ollama create $(model_image_name):$(model_image_tag_name)
