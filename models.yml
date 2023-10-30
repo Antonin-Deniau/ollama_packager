@@ -28,4 +28,4 @@ models:
     hotfixes:
         - step: convert
           description: "Fix the vocab size: The true size is 32000 (cat model/tokenizer.json |jq '.model.vocab | length)"
-          cmd: sed -i 's/32256/32000/g' ./build/$(model_id)/model/config.json
+          cmd: sed -i 's/32256/32000/g' ./build/agentlm/model/config.json
