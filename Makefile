@@ -74,11 +74,10 @@ package:
 	mkdir -p /tmp/models/$(model_id)
 
 	@echo "[STEP] Create modelfile"
-	python ./utils/create_modelfile.py $(model_id)
+	python ./utils/create_modelfile.py $(model_id) > ./build/$(model_id)/Modelfile
 
 	@echo "[STEP] Copy files & package model for ollama"
-	cp ./build/$(model_id)/model.gguf /tmp/models/$(model_id)/model.gguf
-	cp ./build/$(model_id)/Modelfile /tmp/models/$(model_id)/Modelfile
+	cp -r ./build/$(model_id)/* /tmp/models/$(model_id)/
 
 	python ./utils/hotfix.py package $(model_id)
 

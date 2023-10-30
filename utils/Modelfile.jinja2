@@ -1,4 +1,4 @@
-FROM {{ gguf_model_path }}
+FROM ./model.gguf
 
 {% for name, value in model_parameters %}
 PARAMETER {{ name }} {{ value }}
